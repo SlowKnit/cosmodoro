@@ -5,6 +5,7 @@ import TopBar from './components/TopBar.vue';
 import ShootingStars from './components/ShootingStars.vue';
 import backgroundImage from '@/assets/Space Background1.png';
 import planetImage from '@/assets/planet.png';
+import YoutubeEmbed from './components/YoutubeEmbed.vue';
 
 const WORKTIME_MINUTES: number = 25;
 const BREAKTIME_MINUTES: number = 5;
@@ -82,6 +83,7 @@ const startTimer = (minutes: number) => {
           : 'click the planet to start' }} </p>
     </Transition>
     <div class="wrapper">
+      <YoutubeEmbed class="tv" videoId="0aPosoat6Sg" :width="560" :height="315" />
       <SpritesheetPlayer :columns="120" :fps="60" :frame-count="1200" :loop="true" :frame-height="100"
         :frame-width="100" :sprite-url="planetImage" class="planet" @click="onPlanetClicked" />
     </div>
@@ -89,6 +91,15 @@ const startTimer = (minutes: number) => {
 </template>
 
 <style scoped>
+
+.tv{
+  position: absolute;
+  top: 70%;
+  right: 0;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 0 .5rem violet);
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s ease;
