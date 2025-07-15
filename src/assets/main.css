@@ -1,0 +1,50 @@
+@font-face {
+  font-family: 'monogram';
+  src: url('./monogram.ttf');
+}
+
+#app {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  font-family: 'monogram';
+  font-size: 70px;
+  color: snow;
+  text-shadow: #000 0px 0px 32px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+}
+
+.wrapper {
+  align-self: center;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  width: 330px;
+  height: 330px;
+  padding: 15px 15px;
+}
+
+.background {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  height: auto;
+  /* Höhe automatisch anpassen */
+  width: 100%;
+  /* Breite auf 100% setzen */
+  min-height: 100vh;
+  background-size: cover;
+  /* oder contain, je nach Bedarf */
+  background-repeat: no-repeat;
+  background-position: center;
+  /* Zentriert das Hintergrundbild */
+  image-rendering: pixelated;
+
+}
