@@ -69,7 +69,7 @@ const startTimer = (minutes: number) => {
   <TopBar />
   <ShootingStars />
   <Background :isTimerActive="isTimerActive" :isOnBreak="isOnBreak" />
-  <YoutubeEmbedTV :videoId="verityId" :width="560" :height="315" />
+  <YoutubeEmbedTV :videoId="ylangyalgnId" :width="560" :height="315" />
   <div class=foregroud>
     <div class="status-wrapper">
       <Transition name="fade">
@@ -122,7 +122,7 @@ const startTimer = (minutes: number) => {
   z-index: 1000;
 }
 .status-wrapper {
-  height: 10%;
+  height: 15%;
 }
 
 .timer{
