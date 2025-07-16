@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { readonly, ref } from 'vue';
-import SpritesheetPlayer from './components/SpritesheetPlayer.vue';
 import TopBar from './components/TopBar.vue';
 import ShootingStars from './components/ShootingStars.vue';
-import backgroundImage from '@/assets/Space Background1.png';
-import planetImage from '@/assets/planet.png';
-import YoutubeEmbed from './components/YoutubeEmbed.vue';
+import YoutubeEmbedTV from './components/YoutubeEmbedTV.vue';
+import Background from './components/Background.vue';
+import WrappedPlanet from './components/WrappedPlanet.vue';
 
 const WORKTIME_MINUTES: number = 25;
 const BREAKTIME_MINUTES: number = 5;
 
+const ylangyalgnId = "pfU0QORkRpY";
+const verityId = "0aPosoat6Sg";
 const timeMinutes = ref(0);
 const timeSeconds = ref(0);
 const isTimerActive = ref(false);
@@ -67,37 +68,36 @@ const startTimer = (minutes: number) => {
 <template>
   <TopBar />
   <ShootingStars />
-  <div :class="{
-    background: true,
-    break: isTimerActive && isOnBreak,
-    focus: isTimerActive && !isOnBreak
-  }" :style="{ backgroundImage: `url(${backgroundImage})` }">
-    <Transition name="fade">
-      <p v-if="isTimerActive" class="status" :key="isOnBreak ? 'break' : 'focus'">
-        {{ isOnBreak ? 'break time' : 'focus' }}
-      </p>
-    </Transition>
-    <Transition name="fade">
-      <p>
-        {{ isTimerActive ? `${timeMinutes}:${timeSeconds < 10 ? '0' + timeSeconds : timeSeconds}`
-          : 'click the planet to start' }} </p>
-    </Transition>
-    <div class="wrapper">
-      <YoutubeEmbed class="tv" videoId="0aPosoat6Sg" :width="560" :height="315" />
-      <SpritesheetPlayer :columns="120" :fps="60" :frame-count="1200" :loop="true" :frame-height="100"
-        :frame-width="100" :sprite-url="planetImage" class="planet" @click="onPlanetClicked" />
+  <Background :isTimerActive="isTimerActive" :isOnBreak="isOnBreak" />
+  <YoutubeEmbedTV :videoId="verityId" :width="560" :height="315" />
+  <div class=foregroud>
+    <div class="status-wrapper">
+      <Transition name="fade">
+        <p v-if="isTimerActive" class="status">
+          {{ isOnBreak ? 'break time' : 'focus' }}
+        </p>
+      </Transition>
     </div>
+    <Transition name="fade">
+      <p class="timer">
+        {{ isTimerActive ? `${timeMinutes}:${timeSeconds < 10 ? '0' + timeSeconds : timeSeconds}` : 'click the planet'
+        }} </p>
+    </Transition>
+    <WrappedPlanet @planet-clicked="onPlanetClicked" />
   </div>
+
 </template>
 
 <style scoped>
-
-.tv{
-  position: absolute;
-  top: 70%;
-  right: 0;
-  transform: translate(-50%, -50%);
-  filter: drop-shadow(0 0 .5rem violet);
+.foregroud {
+  position: relative;
+  height: 100vh;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-content: start;
+  justify-content: center;
 }
 
 .fade-enter-active,
@@ -115,49 +115,16 @@ const startTimer = (minutes: number) => {
   opacity: 1;
 }
 
-.planet {
-  transition: filter 500ms, transform 1000ms;
-  z-index: 10;
-}
-
-.planet:hover {
-  filter: drop-shadow(0 0 .5rem violet);
-  transform: scale(3.1);
-}
-
-.planet:active {
-  filter: drop-shadow(0 0 .75rem violet);
-  transform: scale(3.2);
-  transition: scale 10ms;
-}
-
 .status {
-  position: fixed;
-  top: 20px;
-  left: 0;
   width: 100%;
   text-align: center;
   color: white;
   z-index: 1000;
 }
-
-.todo {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  transition: filter 1000ms;
+.status-wrapper {
+  height: 10%;
 }
 
-.background {
-  transition: filter 1500ms;
-}
-
-.background.focus {
-  filter: hue-rotate(-40deg);
-}
-
-.background.break {
-  filter: hue-rotate(-100deg);
+.timer{
 }
 </style>

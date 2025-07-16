@@ -28,7 +28,7 @@
     width: 100%;
     text-align: left;
     color: inherit;
-    padding-left: 4rem;
+    padding-left: 8rem;
     padding-top: 1rem;
     padding-bottom: 1rem;
     display: flex;

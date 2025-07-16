@@ -3,7 +3,6 @@
 </template>
 
 <script setup lang="ts">
-import { Console } from 'console'
 import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 
 interface Props {
@@ -72,7 +71,6 @@ onMounted(() => {
   el.style.width = `${props.frameWidth}px`
   el.style.height = `${props.frameHeight}px`
   el.style.backgroundImage = `url(${props.spriteUrl})`
-  console.log(el.style.backgroundImage);
   el.style.backgroundRepeat = 'no-repeat'
   start()
 })
@@ -86,6 +84,5 @@ onBeforeUnmount(stop)
   display: block;
   overflow: hidden;
   will-change: background-position;
-  transform: scale(3);
 }
 </style>

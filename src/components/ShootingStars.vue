@@ -83,7 +83,6 @@ onMounted(() => {
 
     window.addEventListener('resize', resize);
 
-    // Regelmäßig neue Sternschnuppen erzeugen
     const interval = setInterval(() => {
         if (Math.random() < 0.3) createShootingStar();
     }, 400);
