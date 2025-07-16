@@ -13,8 +13,8 @@
     </div>
     <img class="tv-frame" :src="TVImage" alt="TV Frame" @click="playVideo" />
     <div class="tv-volume-knob">
-      <input type="range" min="0" max="100" step="1" v-model="volume" @input="setVolume(Number($event.target?.value))"
-        aria-label="Volume" @click.stop />
+      <input type="range" min="0" max="100" step="1" v-model="volume"
+        @input="setVolume(Number((($event.target as HTMLInputElement)?.value)))" aria-label="Volume" @click.stop />
     </div>
     <div class="tv-controls">
       <button class="tv-btn" :class="{ active: isLooping }" @click="isLooping = !isLooping" aria-label="Loop"
@@ -26,90 +26,80 @@
         <img src="/assets/icons/restart.png" alt="Restart" class="restart-btn-img" />
       </button>
     </div>
+    <div class="tv-seek-controls">
+      <button class="tv-btn" @click="seekBy(-10)" aria-label="Back 5s" title="Back 5s">
+        <img src="/assets/icons/back.png" alt="Back 5s" class="seek-btn-img" />
+      </button>
+      <button class="tv-btn" @click="seekBy(10)" aria-label="Forward 5s" title="Forward 5s">
+        <img src="/assets/icons/forward.png" alt="Forward 5s" class="seek-btn-img" />
+      </button>
+    </div>
   </div>
 </template>
+
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import TVImage from '@/assets/tv.png';
 
 const SCALE = 3;
-const TV_SIZE = [100, 100];
-const TV_MIDDLE_OFFSET = [28, 45];
-const TV_MIDDLE_SIZE = [41, 39];
+const TV_SIZE = [100, 100] as const;
+const TV_MIDDLE_OFFSET = [28, 45] as const;
+const TV_MIDDLE_SIZE = [41, 39] as const;
 
 const props = defineProps<{ videoId: string }>();
 
-const player = ref<any>(null);
+// Player States
+const player = ref<YT.Player | null>(null);
 const playerReady = ref(false);
-const playerState = ref<number | null>(null);
+const playerState = ref<YT.PlayerState | null>(null);
+const isLooping = ref(false);
+const volume = ref(50);
 
+// TV screen dimensions
 const screenTop = TV_MIDDLE_OFFSET[1] * SCALE;
 const screenLeft = TV_MIDDLE_OFFSET[0] * SCALE;
 const screenWidth = TV_MIDDLE_SIZE[0] * SCALE;
 const screenHeight = TV_MIDDLE_SIZE[1] * SCALE;
 const scaledTVWidth = TV_SIZE[0] * SCALE;
 const scaledTVHeight = TV_SIZE[1] * SCALE;
-const volume = ref(50);
 
-const isLooping = ref(false);
-
-const setVolume = (v: number) => {
-  volume.value = v;
-  if (playerReady.value && player.value) {
-    //@ts-ignore
-    player.value.setVolume(v);
-  }
-};
-
-const restartVideo = () => {
-  if (playerReady.value && player.value) {
-    //@ts-ignore
-    player.value.seekTo(0, true);
-    //@ts-ignore
-    player.value.playVideo();
-  }
-};
-
-const loadYouTubeAPI = () => {
+// Load YouTube iframe API script
+const loadYouTubeAPI = (): Promise<typeof YT> => {
   return new Promise((resolve) => {
-    //@ts-ignore;
     if (window.YT && window.YT.Player) {
-      //@ts-ignore;
       resolve(window.YT);
     } else {
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-      //@ts-ignore;
+      const script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(script);
+
       window.onYouTubeIframeAPIReady = () => {
-        //@ts-ignore;
         resolve(window.YT);
       };
     }
-    setVolume(50);
   });
 };
 
+// Initialize YT Player
 const initPlayer = async () => {
   const YT = await loadYouTubeAPI();
-  //@ts-ignore;
+
   player.value = new YT.Player('tv-iframe', {
-    height: screenHeight,
-    width: screenWidth,
+    height: screenHeight.toString(),
+    width: screenWidth.toString(),
     videoId: props.videoId,
     events: {
       onReady: () => {
         playerReady.value = true;
+        setVolume(volume.value);
       },
-      onStateChange: (event: any) => {
+      onStateChange: (event: YT.OnStateChangeEvent) => {
         playerState.value = event.data;
-        // Loop-Logik
-        if (isLooping.value && event.data === 0) {
-          player.value.seekTo(0, true);
-          player.value.playVideo();
+        if (isLooping.value && event.data === YT.PlayerState.ENDED) {
+          player.value?.seekTo(0, true);
+          player.value?.playVideo();
         }
-      }
+      },
     },
     playerVars: {
       rel: 0,
@@ -120,18 +110,37 @@ const initPlayer = async () => {
       fs: 0,
       iv_load_policy: 3,
       playsinline: 1,
-    }
+    },
   });
 };
 
+// Controls
 const playVideo = () => {
-  if (playerReady.value) {
-    //@ts-ignore;
-    if (player.value && player.value.getPlayerState() === YT.PlayerState.PLAYING) {
-      player.value.pauseVideo();
-    } else {
-      player.value.playVideo();
-    }
+  if (!playerReady.value || !player.value) return;
+  const state = player.value.getPlayerState();
+  if (state === window.YT.PlayerState.PLAYING) {
+    player.value.pauseVideo();
+  } else {
+    player.value.playVideo();
+  }
+};
+
+const seekBy = (seconds: number) => {
+  if (!playerReady.value || !player.value) return;
+  const current = player.value.getCurrentTime();
+  player.value.seekTo(current + seconds, true);
+};
+
+const restartVideo = () => {
+  if (!playerReady.value || !player.value) return;
+  player.value.seekTo(0, true);
+  player.value.playVideo();
+};
+
+const setVolume = (v: number) => {
+  volume.value = v;
+  if (playerReady.value && player.value) {
+    player.value.setVolume(v);
   }
 };
 
@@ -259,7 +268,7 @@ onMounted(() => {
   position: absolute;
   bottom: 84%;
   height: 20%;
-  z-index: 100;
+  z-index: 5;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -276,7 +285,6 @@ onMounted(() => {
   width: 32px;
   height: 32px;
   cursor: pointer;
-  transition: background 0.2s;
   user-select: none;
   outline: none;
   display: flex;
@@ -305,9 +313,8 @@ onMounted(() => {
   transform: scale(1.1);
 }
 
-.tv-btn.active,
-.tv-btn:hover {
-  background: violet;
+.tv-btn:active {
+  transform: scale(1.12);
 }
 
 .tv-controls,
@@ -319,6 +326,37 @@ onMounted(() => {
 
 .tv-wrapper:hover .tv-controls,
 .tv-wrapper:hover .tv-volume-knob {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 1s;
+}
+
+.seek-btn-img {
+  width: 36px;
+  height: 36px;
+  transition: transform 0.2s;
+}
+
+.seek-btn-img:hover {
+  transform: scale(1.1);
+}
+
+.tv-seek-controls {
+  z-index: 5;
+  position: absolute;
+  bottom: 45%;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.tv-wrapper:hover .tv-seek-controls {
   opacity: 1;
   pointer-events: auto;
   transition: opacity 1s;

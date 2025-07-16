@@ -1,3 +1,26 @@
+<template>
+  <TopBar />
+  <ShootingStars />
+  <Background :isTimerActive="isTimerActive" :isOnBreak="isOnBreak" />
+  <YoutubeEmbedTV :videoId="ylangyalgnId" :width="560" :height="315" />
+  <div class=foregroud>
+    <div class="status-wrapper">
+      <Transition name="fade">
+        <p v-if="isTimerActive" class="status">
+          {{ isOnBreak ? 'break time' : 'focus' }}
+        </p>
+      </Transition>
+    </div>
+    <Transition name="fade">
+      <p class="timer">
+        {{ isTimerActive ? `${timeMinutes}:${timeSeconds < 10 ? '0' + timeSeconds : timeSeconds}` : 'click the planet'
+        }} </p>
+    </Transition>
+    <WrappedPlanet @planet-clicked="onPlanetClicked" />
+  </div>
+
+</template>
+
 <script setup lang="ts">
 import { readonly, ref } from 'vue';
 import TopBar from './components/TopBar.vue';
@@ -65,28 +88,7 @@ const startTimer = (minutes: number) => {
 };
 </script>
 
-<template>
-  <TopBar />
-  <ShootingStars />
-  <Background :isTimerActive="isTimerActive" :isOnBreak="isOnBreak" />
-  <YoutubeEmbedTV :videoId="ylangyalgnId" :width="560" :height="315" />
-  <div class=foregroud>
-    <div class="status-wrapper">
-      <Transition name="fade">
-        <p v-if="isTimerActive" class="status">
-          {{ isOnBreak ? 'break time' : 'focus' }}
-        </p>
-      </Transition>
-    </div>
-    <Transition name="fade">
-      <p class="timer">
-        {{ isTimerActive ? `${timeMinutes}:${timeSeconds < 10 ? '0' + timeSeconds : timeSeconds}` : 'click the planet'
-        }} </p>
-    </Transition>
-    <WrappedPlanet @planet-clicked="onPlanetClicked" />
-  </div>
 
-</template>
 
 <style scoped>
 .foregroud {
@@ -121,10 +123,8 @@ const startTimer = (minutes: number) => {
   color: white;
   z-index: 1000;
 }
+
 .status-wrapper {
   height: 15%;
-}
-
-.timer{
 }
 </style>

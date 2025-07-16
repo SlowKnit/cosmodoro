@@ -28,6 +28,7 @@ function onClicked() {
   width: 300px;
   height: 300px;
   padding: 15px 15px;
+  margin-bottom: 200px;
 }
 
 .planet {
