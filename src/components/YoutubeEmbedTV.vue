@@ -1,5 +1,7 @@
 <template>
-  <div class="tv-wrapper" :style="{ width: `${scaledTVWidth}px`, height: `${scaledTVHeight}px` }">
+  <div class="tv-wrapper" :style="{ width: `${scaledTVWidth}px`, height: `${scaledTVHeight}px` }"
+    @mouseover="onHover(true)" @mouseleave="onHover(false)">
+    <ScrollingText :text="videoName" />
     <div class="tv-video" :style="{
       top: `${screenTop}px`,
       left: `${screenLeft}px`,
@@ -22,38 +24,94 @@
         <img :src="isLooping ? '/assets/icons/loop_on.png' : '/assets/icons/loop_off.png'" alt="Loop"
           class="loop-btn-img" />
       </button>
+      <button class="tv-btn" @click="playRandomVideo" aria-label="Random" title="Random">
+        <img src="/assets/icons/shuffle.png" alt="Random" class="restart-btn-img" />
+      </button>
+      <div class="crt-scanlines"></div>
       <button class="tv-btn" @click="restartVideo" aria-label="Restart" title="Restart">
         <img src="/assets/icons/restart.png" alt="Restart" class="restart-btn-img" />
       </button>
     </div>
     <div class="tv-seek-controls">
-      <button class="tv-btn" @click="seekBy(-10)" aria-label="Back 5s" title="Back 5s">
-        <img src="/assets/icons/back.png" alt="Back 5s" class="seek-btn-img" />
+      <button class="tv-btn" @click="seekBy(-10)" aria-label="10s back" title="10s back">
+        <img src="/assets/icons/back.png" alt="10s back" class="seek-btn-img" />
       </button>
-      <button class="tv-btn" @click="seekBy(10)" aria-label="Forward 5s" title="Forward 5s">
-        <img src="/assets/icons/forward.png" alt="Forward 5s" class="seek-btn-img" />
+      <button class="tv-btn" @click="seekBy(10)" aria-label="10s forward" title="10s forward">
+        <img src="/assets/icons/forward.png" alt="10s forward" class="seek-btn-img" />
       </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref, type Ref } from 'vue';
 import TVImage from '@/assets/tv.png';
-
+import ScrollingText from './ScrollingText.vue';
 const SCALE = 3;
 const TV_SIZE = [100, 100] as const;
-const TV_MIDDLE_OFFSET = [28, 45] as const;
-const TV_MIDDLE_SIZE = [41, 39] as const;
+const TV_MIDDLE_OFFSET = [23, 45] as const;
+const TV_MIDDLE_SIZE = [42, 39] as const;
 
-const props = defineProps<{ videoId: string }>();
+const videoIds = [
+  '0aPosoat6Sg', // Lake Verity
+  'pfU0QORkRpY', // Ylang Ylang
+  'Z0AIu63Nmj8', // Macroblank ヒーロー v2
+  'Uu1bK20sEF8', // slowerpace 音楽 – 香り ep 
+];
 
+let videoId = videoIds[0];
+let interval: number | null = null;
 // Player States
-const player = ref<YT.Player | null>(null);
+const player: Ref<typeof YT.Player | any> = ref<YT.Player | null>(null);
 const playerReady = ref(false);
 const playerState = ref<YT.PlayerState | null>(null);
 const isLooping = ref(false);
 const volume = ref(50);
+const videoMeta: Record<string, string> = {
+  '0aPosoat6Sg': 'Lake Verity',
+  'pfU0QORkRpY': 'Ylang Ylang',
+  'Z0AIu63Nmj8': 'Macroblank ヒーロー v2',
+  'Uu1bK20sEF8': 'slowerpace 音楽 – 香り ep',
+};
+
+const isHovered = ref(false);
+const currentTime = ref(0);
+const duration = ref(0);
+
+const videoName = computed(() => {
+  if (isHovered.value && playerReady.value && player.value) {
+    const format = (t: number) => {
+      const m = Math.floor(t / 60).toString().padStart(2, '0');
+      const s = Math.floor(t % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    };
+    return `${format(currentTime.value)} / ${format(duration.value)}`;
+  }
+  return playerReady.value && playerState.value !== YT.PlayerState.PLAYING
+    ? '...'
+    : videoMeta[videoId] ?? '';
+});
+
+const updateTime = () => {
+  if (player.value) {
+    currentTime.value = player.value.getCurrentTime();
+    duration.value = player.value.getDuration();
+  }
+};
+
+// Listen for hover on tv-wrapper
+const onHover = (hovered: boolean) => {
+  isHovered.value = hovered;
+  if (hovered && playerReady.value) {
+    updateTime(); // sofortiges Update
+    interval = window.setInterval(updateTime, 500); // alle 0.5s
+  } else {
+    if (interval !== null) {
+      clearInterval(interval);
+      interval = null;
+    }
+  }
+};
 
 // TV screen dimensions
 const screenTop = TV_MIDDLE_OFFSET[1] * SCALE;
@@ -87,17 +145,23 @@ const initPlayer = async () => {
   player.value = new YT.Player('tv-iframe', {
     height: screenHeight.toString(),
     width: screenWidth.toString(),
-    videoId: props.videoId,
+    videoId: videoId,
     events: {
       onReady: () => {
         playerReady.value = true;
         setVolume(volume.value);
+        player.value.setPlaybackQuality('small');
       },
       onStateChange: (event: YT.OnStateChangeEvent) => {
         playerState.value = event.data;
-        if (isLooping.value && event.data === YT.PlayerState.ENDED) {
-          player.value?.seekTo(0, true);
-          player.value?.playVideo();
+        if (event.data === YT.PlayerState.ENDED) {
+          if (isLooping.value) {
+            player.value?.seekTo(0, true);
+            player.value?.playVideo();
+          }
+          else {
+            playRandomVideo();
+          }
         }
       },
     },
@@ -144,6 +208,16 @@ const setVolume = (v: number) => {
   }
 };
 
+const playRandomVideo = () => {
+  if (!playerReady.value || !player.value) return;
+  let randomId;
+  do {
+    randomId = videoIds[Math.floor(Math.random() * videoIds.length)];
+  } while (randomId === videoId && videoIds.length > 1);
+  videoId = randomId;
+  player.value.loadVideoById(randomId);
+};
+
 onMounted(() => {
   initPlayer();
 });
@@ -169,7 +243,7 @@ onMounted(() => {
 
 .tv-video {
   position: absolute;
-  z-index: 1;
+  z-index: 5;
   pointer-events: none;
 }
 
@@ -177,7 +251,7 @@ onMounted(() => {
   position: relative;
   width: 100%;
   height: auto;
-  z-index: 2;
+  z-index: 13;
   -webkit-user-drag: none;
 }
 
@@ -191,7 +265,7 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 2;
+  z-index: 5;
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -246,7 +320,7 @@ onMounted(() => {
 }
 
 .tv-volume-knob {
-  z-index: 3;
+  z-index: 15;
   position: relative;
   bottom: 15%;
   width: 120px;
@@ -265,10 +339,10 @@ onMounted(() => {
 }
 
 .tv-controls {
+  z-index: 14;
   position: absolute;
   bottom: 84%;
   height: 20%;
-  z-index: 5;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -278,7 +352,7 @@ onMounted(() => {
 }
 
 .tv-btn {
-  margin: 15%;
+  margin: 4%;
   background: #222;
   border: none;
   border-radius: 50%;
@@ -300,7 +374,7 @@ onMounted(() => {
 }
 
 .restart-btn-img:hover {
-  transform: scale(1.1);
+  transform: scale(1.2);
 }
 
 .loop-btn-img {
@@ -310,11 +384,11 @@ onMounted(() => {
 }
 
 .loop-btn-img:hover {
-  transform: scale(1.1);
+  transform: scale(1.2);
 }
 
 .tv-btn:active {
-  transform: scale(1.12);
+  transform: scale(1.1);
 }
 
 .tv-controls,
@@ -338,13 +412,13 @@ onMounted(() => {
 }
 
 .seek-btn-img:hover {
-  transform: scale(1.1);
+  transform: scale(1.2);
 }
 
 .tv-seek-controls {
-  z-index: 5;
+  z-index: 14;
   position: absolute;
-  bottom: 45%;
+  bottom: 60%;
   left: 0;
   width: 100%;
   display: flex;

@@ -4,6 +4,7 @@
 }
 
 #app {
+  background-color: #0e001f;
   width: 100%;
   height: auto;
   display: flex;

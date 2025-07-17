@@ -22,11 +22,11 @@ const props = defineProps<{
     position: absolute;
     inset: 0;
     overflow: hidden;
-    z-index: -1;
+    z-index: 0;
 }
 
 .background {
-    animation: scroll-bg 480s linear infinite;
+    animation: scroll-bg 480s linear infinite, fade-in 1s ease-in-out;
     transition: filter 300ms;
     display: flex;
     width: 300%;
@@ -34,6 +34,7 @@ const props = defineProps<{
     position: absolute;
     inset: 0;
     will-change: transform;
+    background-color: #0e001f;
 }
 
 .bg-layer {
@@ -48,6 +49,15 @@ const props = defineProps<{
 
 .bg-layer.mirrored {
     transform: scaleX(-1);
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes scroll-bg {
