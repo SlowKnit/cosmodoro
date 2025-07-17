@@ -11,9 +11,10 @@
       </Transition>
     </div>
     <Transition name="fade">
-      <p class="timer">
-        {{ isTimerActive ? `${timeDisplay.sign}${timeDisplay.minutes}:${timeDisplay.seconds}` :
-          'click the planet' }}
+      <p class="timer" @click="timerPauseToggle">
+        {{ isPaused ? 'paused' :
+          isTimerActive ? `${timeDisplay.sign}${timeDisplay.minutes}:${timeDisplay.seconds}` :
+            'click the planet' }}
       </p>
     </Transition>
     <WrappedPlanet @planet-clicked="onPlanetClicked" />
@@ -31,11 +32,12 @@ import WrappedPlanet from './components/WrappedPlanet.vue';
 
 const WORKTIME_MINUTES: number = 25;
 const BREAKTIME_MINUTES: number = 5;
-const tvRef = useTemplateRef<typeof YoutubeEmbedTV>('TV');
 
+const isPaused = ref(false);
 const remainingSeconds = ref(0);
 const isTimerActive = ref(false);
 
+const tvRef = useTemplateRef<typeof YoutubeEmbedTV>('TV');
 const timeDisplay = computed(() => {
   const abs = Math.abs(remainingSeconds.value);
   const sign = remainingSeconds.value < 0 ? '-' : '';
@@ -87,8 +89,27 @@ const startTimer = (seconds: number) => {
   }
 };
 
+const timerPauseToggle = () => {
+  if (!isTimerActive.value) return;
+
+  if (isPaused.value) {
+    // Resume
+    isPaused.value = false;
+    interval = setInterval(() => {
+      remainingSeconds.value--;
+      if (remainingSeconds.value === 0) {
+        onTimerEnd();
+      }
+    }, 1000);
+  } else {
+    // Pause
+    isPaused.value = true;
+    clearInterval(interval);
+  }
+};
+
 const onTimerEnd = () => {
-  tvRef.value?.fadeOutVolume(15,300);
+  tvRef.value?.fadeOutVolume(15, 300);
   playSound(2000);
 };
 const notificationSound = ref<HTMLAudioElement | null>(null);
@@ -156,9 +177,13 @@ const stopSound = () => {
   justify-content: center;
 }
 
-.timer{
+.timer {
+  transition: filter 500ms, transform 300ms;
   position: relative;
   top: 5%;
 }
-
+.timer:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 .15rem cyan);
+}
 </style>
