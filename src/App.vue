@@ -1,28 +1,28 @@
 <template>
-  <Background :isTimerActive="isTimerActive" :isOnBreak="isOnBreak" />
+  <Background :isTimerActive='isTimerActive' :isOnBreak='isOnBreak' />
   <TopBar />
   <ShootingStars />
-  <div class=foregroud>
-    <div class="status-wrapper">
-      <Transition name="fade">
-        <p v-if="isTimerActive" class="status">
+  <div class='foregroud'>
+    <div class='status-wrapper'>
+      <Transition name='fade'>
+        <p v-if='isTimerActive' class='status'>
           {{ isOnBreak ? 'take a break' : 'focus' }}
         </p>
       </Transition>
     </div>
-    <Transition name="fade">
-      <p class="timer" @click="timerPauseToggle">
+    <Transition name='fade'>
+      <p class='timer' :class="{ toggle: isTimerActive }" @click="timerPauseToggle">
         {{ isPaused ? 'paused' :
           isTimerActive ? `${timeDisplay.sign}${timeDisplay.minutes}:${timeDisplay.seconds}` :
             'click the planet' }}
       </p>
     </Transition>
-    <WrappedPlanet @planet-clicked="onPlanetClicked" />
+    <WrappedPlanet @planet-clicked='onPlanetClicked' />
   </div>
-  <YoutubeEmbedTV ref="TV" />
+  <YoutubeEmbedTV ref='TV' />
 </template>
 
-<script setup lang="ts">
+<script setup lang='ts'>
 import { computed, ref, useTemplateRef } from 'vue';
 import TopBar from './components/TopBar.vue';
 import ShootingStars from './components/ShootingStars.vue';
@@ -182,7 +182,7 @@ const stopSound = () => {
   position: relative;
   top: 5%;
 }
-.timer:hover {
+.toggle:hover {
   transform: scale(1.05);
   filter: drop-shadow(0 0 .15rem cyan);
 }
