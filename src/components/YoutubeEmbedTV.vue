@@ -54,8 +54,6 @@ const TV_MIDDLE_OFFSET = [23, 45] as const;
 const TV_MIDDLE_SIZE = [42, 39] as const;
 
 const videoIds = [
-  '0aPosoat6Sg', // Lake Verity
-  'pfU0QORkRpY', // Ylang Ylang
   'Z0AIu63Nmj8', // Macroblank ヒーロー v2
   'Uu1bK20sEF8', // slowerpace 音楽 – 香り ep 
 ];
@@ -70,8 +68,6 @@ const playerState = ref<YT.PlayerState | null>(null);
 const isLooping = ref(false);
 const volume = ref(50);
 const videoMeta: Record<string, string> = {
-  '0aPosoat6Sg': 'Lake Verity',
-  'pfU0QORkRpY': 'Ylang Ylang',
   'Z0AIu63Nmj8': 'Macroblank ヒーロー v2',
   'Uu1bK20sEF8': 'slowerpace 音楽 – 香り ep',
 };
@@ -152,14 +148,13 @@ const screenHeight = TV_MIDDLE_SIZE[1] * SCALE;
 const scaledTVWidth = TV_SIZE[0] * SCALE;
 const scaledTVHeight = TV_SIZE[1] * SCALE;
 
-// Load YouTube iframe API script
 const loadYouTubeAPI = (): Promise<typeof YT> => {
   return new Promise((resolve) => {
     if (window.YT && window.YT.Player) {
       resolve(window.YT);
     } else {
       const script = document.createElement('script');
-      script.src = 'https://www.youtube.com/iframe_api';
+      script.src = 'https://www.youtube.com/iframe_api'; // ← NICHT ändern!
       document.head.appendChild(script);
 
       window.onYouTubeIframeAPIReady = () => {
@@ -169,7 +164,6 @@ const loadYouTubeAPI = (): Promise<typeof YT> => {
   });
 };
 
-// Initialize YT Player
 const initPlayer = async () => {
   const YT = await loadYouTubeAPI();
 
@@ -177,6 +171,7 @@ const initPlayer = async () => {
     height: screenHeight.toString(),
     width: screenWidth.toString(),
     videoId: videoId,
+    host: 'https://www.youtube-nocookie.com', // no-cookie-mode
     events: {
       onReady: () => {
         playerReady.value = true;
@@ -189,8 +184,7 @@ const initPlayer = async () => {
           if (isLooping.value) {
             player.value?.seekTo(0, true);
             player.value?.playVideo();
-          }
-          else {
+          } else {
             playRandomVideo();
           }
         }
@@ -205,9 +199,11 @@ const initPlayer = async () => {
       fs: 0,
       iv_load_policy: 3,
       playsinline: 1,
+      origin: window.location.origin
     },
   });
 };
+
 
 // Controls
 const playVideo = () => {
