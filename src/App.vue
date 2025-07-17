@@ -6,22 +6,23 @@
     <div class="status-wrapper">
       <Transition name="fade">
         <p v-if="isTimerActive" class="status">
-          {{ isOnBreak ? 'break time' : 'focus' }}
+          {{ isOnBreak ? 'take a break' : 'focus' }}
         </p>
       </Transition>
     </div>
     <Transition name="fade">
       <p class="timer">
-        {{ isTimerActive ? `${timeMinutes}:${timeSeconds < 10 ? '0' + timeSeconds : timeSeconds}` : 'click the planet'
-          }} </p>
+        {{ isTimerActive ? `${timeDisplay.sign}${timeDisplay.minutes}:${timeDisplay.seconds}` :
+          'click the planet' }}
+      </p>
     </Transition>
     <WrappedPlanet @planet-clicked="onPlanetClicked" />
   </div>
-  <YoutubeEmbedTV />
+  <YoutubeEmbedTV ref="TV" />
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
 import TopBar from './components/TopBar.vue';
 import ShootingStars from './components/ShootingStars.vue';
 import YoutubeEmbedTV from './components/YoutubeEmbedTV.vue';
@@ -30,58 +31,85 @@ import WrappedPlanet from './components/WrappedPlanet.vue';
 
 const WORKTIME_MINUTES: number = 25;
 const BREAKTIME_MINUTES: number = 5;
+const tvRef = useTemplateRef<typeof YoutubeEmbedTV>('TV');
 
-
-const timeMinutes = ref(0);
-const timeSeconds = ref(0);
+const remainingSeconds = ref(0);
 const isTimerActive = ref(false);
-let interval: number | undefined = undefined;
+
+const timeDisplay = computed(() => {
+  const abs = Math.abs(remainingSeconds.value);
+  const sign = remainingSeconds.value < 0 ? '-' : '';
+  const minutes = Math.floor(abs / 60);
+  const seconds = abs % 60;
+  return {
+    sign,
+    minutes,
+    seconds: seconds.toString().padStart(2, '0')
+  };
+});
+
+let interval: number | undefined;
 let isOnBreak = ref(false);
 
 const onPlanetClicked = () => {
+  stopSound();
   if (!isTimerActive.value) {
-    startTimer(WORKTIME_MINUTES);
-  }
-  else {
+    startTimer(WORKTIME_MINUTES * 60);
+  } else {
     resetTimer();
     if (isOnBreak.value) {
       isOnBreak.value = false;
-    }
-    else {
+    } else {
       isOnBreak.value = true;
-      startTimer(BREAKTIME_MINUTES);
+      startTimer(BREAKTIME_MINUTES * 60);
     }
   }
 };
 
 const resetTimer = () => {
-  timeMinutes.value = 0;
-  timeSeconds.value = 0;
+  remainingSeconds.value = 0;
   clearInterval(interval);
   isTimerActive.value = false;
-}
+};
 
-const startTimer = (minutes: number) => {
+const startTimer = (seconds: number) => {
   if (!isTimerActive.value) {
+    remainingSeconds.value = seconds;
     isTimerActive.value = true;
-    timeMinutes.value = minutes;
-    timeSeconds.value = 0;
+
     interval = setInterval(() => {
-      if (timeSeconds.value > 0) {
-        timeSeconds.value--;
-      } else if (timeMinutes.value > 0) {
-        timeMinutes.value--;
-        timeSeconds.value = 59;
-      } else {
-        clearInterval(interval);
-        if (isOnBreak.value) {
-          isOnBreak.value = false;
-          isTimerActive.value = false;
-          return;
-        }
-        onPlanetClicked();
+      remainingSeconds.value--;
+      if (remainingSeconds.value === 0) {
+        onTimerEnd();
       }
+
     }, 1000);
+  }
+};
+
+const onTimerEnd = () => {
+  tvRef.value?.fadeOutVolume(15,300);
+  playSound(2000);
+};
+const notificationSound = ref<HTMLAudioElement | null>(null);
+
+const playSound = (delayMs = 0) => {
+  setTimeout(() => {
+    const audio = new Audio('/sounds/notify.ogg');
+    audio.loop = true;
+    audio.play().catch((error) => {
+      console.error('Error playing sound:', error);
+    });
+    notificationSound.value = audio;
+  }, delayMs);
+};
+
+const stopSound = () => {
+  if (notificationSound.value) {
+    notificationSound.value.pause();
+    notificationSound.value.currentTime = 0;
+    notificationSound.value = null;
+    tvRef.value?.fadeInVolume(15, 100);
   }
 };
 </script>
@@ -90,7 +118,6 @@ const startTimer = (minutes: number) => {
 
 <style scoped>
 .foregroud {
-  position: relative;
   height: 100vh;
   z-index: 10;
   display: flex;
@@ -117,12 +144,21 @@ const startTimer = (minutes: number) => {
 
 .status {
   width: 100%;
+  top: 10%;
   text-align: center;
   color: white;
   z-index: 1000;
 }
 
 .status-wrapper {
-  height: 15%;
+  height: 10%;
+  display: flex;
+  justify-content: center;
 }
+
+.timer{
+  position: relative;
+  top: 5%;
+}
+
 </style>

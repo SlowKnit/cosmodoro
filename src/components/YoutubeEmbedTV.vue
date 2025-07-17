@@ -47,6 +47,7 @@
 import { computed, onMounted, ref, type Ref } from 'vue';
 import TVImage from '@/assets/tv.png';
 import ScrollingText from './ScrollingText.vue';
+
 const SCALE = 3;
 const TV_SIZE = [100, 100] as const;
 const TV_MIDDLE_OFFSET = [23, 45] as const;
@@ -61,6 +62,7 @@ const videoIds = [
 
 let videoId = videoIds[0];
 let interval: number | null = null;
+
 // Player States
 const player: Ref<typeof YT.Player | any> = ref<YT.Player | null>(null);
 const playerReady = ref(false);
@@ -90,6 +92,35 @@ const videoName = computed(() => {
   return playerReady.value && playerState.value !== YT.PlayerState.PLAYING
     ? '...'
     : videoMeta[videoId] ?? '';
+});
+let savedVolume = 50; // Default volume
+// Fade volume down to zero
+const fadeOutVolume = (step = 5, intervalMs = 50) => {
+  if (!playerReady.value || !player.value) return;
+  savedVolume = volume.value; // Save current volume
+  const fade = () => {
+    if (volume.value > 0) {
+      setVolume(Math.max(0, volume.value - step));
+      setTimeout(fade, intervalMs);
+    }
+  };
+  fade();
+};
+
+const fadeInVolume = (step = 5, intervalMs = 50) => {
+  if (!playerReady.value || !player.value) return;
+  const fade = () => {
+    if (volume.value < savedVolume) {
+      setVolume(Math.min(savedVolume, volume.value + step));
+      setTimeout(fade, intervalMs);
+    }
+  };
+  fade();
+};
+
+defineExpose({
+  fadeOutVolume,
+  fadeInVolume,
 });
 
 const updateTime = () => {
@@ -416,7 +447,7 @@ onMounted(() => {
 }
 
 .tv-seek-controls {
-  z-index: 14;
+  z-index: 15;
   position: absolute;
   bottom: 60%;
   left: 0;
