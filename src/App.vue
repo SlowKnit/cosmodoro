@@ -2,6 +2,9 @@
   <Background :isTimerActive='isTimerActive' :isOnBreak='isOnBreak' />
   <TopBar />
   <ShootingStars />
+  <SideBar :break-minutes="breaktime_mins" :focus-minutes="focustime_mins"
+    @update:focus-minutes="(newValue) => { focustime_mins = newValue }" 
+    @update:break-minutes="(newValue) => { breaktime_mins = newValue }"/>
   <div class='foregroud'>
     <div class='status-wrapper'>
       <Transition name='fade'>
@@ -29,9 +32,10 @@ import ShootingStars from './components/ShootingStars.vue';
 import YoutubeEmbedTV from './components/YoutubeEmbedTV.vue';
 import Background from './components/Background.vue';
 import WrappedPlanet from './components/WrappedPlanet.vue';
+import SideBar from './components/SideBar.vue';
 
-const WORKTIME_MINUTES: number = 25;
-const BREAKTIME_MINUTES: number = 5;
+const focustime_mins = ref(25);
+const breaktime_mins = ref(5);
 
 const isPaused = ref(false);
 const remainingSeconds = ref(0);
@@ -56,14 +60,14 @@ let isOnBreak = ref(false);
 const onPlanetClicked = () => {
   stopSound();
   if (!isTimerActive.value) {
-    startTimer(WORKTIME_MINUTES * 60);
+    startTimer(focustime_mins.value * 60);
   } else {
     resetTimer();
     if (isOnBreak.value) {
       isOnBreak.value = false;
     } else {
       isOnBreak.value = true;
-      startTimer(BREAKTIME_MINUTES * 60);
+      startTimer(breaktime_mins.value * 60);
     }
   }
 };
@@ -182,6 +186,7 @@ const stopSound = () => {
   position: relative;
   top: 5%;
 }
+
 .toggle:hover {
   transform: scale(1.05);
   filter: drop-shadow(0 0 .15rem cyan);

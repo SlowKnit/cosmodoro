@@ -27,7 +27,7 @@ const props = defineProps<{
 
 .background {
     animation: scroll-bg 480s linear infinite, fade-in 1s ease-in-out;
-    transition: filter 300ms;
+    transition: filter 800ms;
     display: flex;
     width: 300%;
     height: 100%;
