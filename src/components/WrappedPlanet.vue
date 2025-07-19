@@ -33,6 +33,7 @@ function onClicked() {
 
 .planet {
   transition: filter 500ms, transform 1000ms;
+  filter: drop-shadow(0 0 .05rem cyan);
   z-index: 10;
   transform: scale(3);
 }

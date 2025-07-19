@@ -8,7 +8,7 @@
         <!-- Sidebar -->
         <transition name="slide">
             <div v-if="isOpen" class="sidebar">
-                <label>settings</label>
+                <label class="main-label">settings</label>
                 <div class="form-group">
                     <label class="label">focus(min)</label>
                     <NumberInput :numberValue="focusMinutes" v-on:update:number-value="onFocusTimeChanged" />
@@ -19,24 +19,25 @@
 
                     <NumberInput :numberValue="breakMinutes" v-on:update:number-value="onBreakTimeChanged" />
                 </div>
+                <span class="reset" @click="onReset">reset</span>
 
-                <a href="https://ko-fi.com/slowknit" target="_blank" rel="noopener" class="support-button">
-                    ko-fi
-                </a>
             </div>
         </transition>
     </div>
 </template>
 
 <script setup lang="ts">
+
 import { ref } from 'vue'
 import NumberInput from './NumberInput.vue'
+
 const isOpen = ref(false)
 
 const props = defineProps<{
     focusMinutes: number;
     breakMinutes: number;
 }>();
+
 const emits = defineEmits<{
     (e: 'update:focusMinutes', value: number): void;
     (e: 'update:breakMinutes', value: number): void;
@@ -45,8 +46,14 @@ const emits = defineEmits<{
 function onFocusTimeChanged(value: number) {
     emits('update:focusMinutes', value);
 }
+
 function onBreakTimeChanged(value: number) {
     emits('update:breakMinutes', value);
+}
+
+function onReset() {
+    emits('update:focusMinutes', 25);
+    emits('update:breakMinutes', 5);
 }
 
 </script>
@@ -80,7 +87,7 @@ function onBreakTimeChanged(value: number) {
 }
 
 .label {
-    @apply text-center;
+    @apply text-center mr-4;
 }
 
 .icon {
@@ -88,7 +95,7 @@ function onBreakTimeChanged(value: number) {
 }
 
 .sidebar {
-    @apply fixed top-0 right-0 h-full w-1/4 p-4 flex flex-col;
+    @apply fixed top-0 right-0 h-full w-1/4 pl-4 pr-4 flex flex-col;
     background-color: #0e001f;
     z-index: 1000;
 }
@@ -98,10 +105,6 @@ function onBreakTimeChanged(value: number) {
     font-size: 80px;
     font-family: 'monogram';
     background-color: #0e001f;
-}
-
-.support-button {
-    @apply block h-8 bg-violet-800 hover:bg-violet-900 text-white py-2 px-4 rounded-md w-full mt-4 absolute bottom-10 text-xl;
 }
 
 .slide-enter-active,
@@ -123,5 +126,25 @@ function onBreakTimeChanged(value: number) {
 
 .slide-leave-to {
     transform: translateX(100%);
+}
+
+.main-label {
+    @apply mb-10 top-0 underline;
+}
+
+.reset {
+    transition: transform 0.05s ease, filter 0.1s ease;
+    @apply cursor-pointer transition w-1 select-none;
+}
+
+.reset:hover {
+    filter: drop-shadow(0 0 .25rem violet);
+    transform: scale(1.05);
+}
+
+.reset:active {
+    filter: drop-shadow(0 0 .35rem violet);
+    transform: scale(1.1);
+    transition: transform 0.05s ease, filter 0.05s ease;
 }
 </style>
