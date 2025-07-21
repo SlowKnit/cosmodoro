@@ -1,39 +1,57 @@
-# doro
+# 🌌 Cosmodoro – A Minimalist, Privacy-Friendly Pomodoro Timer
 
-This template should help get you started developing with Vue 3 in Vite.
+**Cosmodoro** is a simple and beautiful Pomodoro timer focused on mindfulness, productivity, and respecting your privacy.  
+Designed to feel calm, pixel-perfect, and distraction-free.
 
-## Recommended IDE Setup
+[🌐 Live Demo](https://cosmodoro-one.vercel.app/)
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+---
 
-## Type Support for `.vue` Imports in TS
+## ✨ Features
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- 🕒 Customizable Pomodoro / Break durations
+- 🎨 Stylish pixel-style background animation
+- 🧠 Focus & Break modes with hue-shift
+- 🛡️ No invasive tracking
+- 🛠️ Lightweight and fast (built with Vite + Vue)
+- 📱 Responsive & mobile-friendly
 
-## Customize configuration
+---
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## 📸 Preview
 
-## Project Setup
+![Screenshot](./screenshot.png)
 
-```sh
+---
+
+## ⚙️ Customization
+
+You can adjust durations via the settings sidebar (⚙️ icon).  
+Perfect for adapting to your own workflow and energy level.
+
+---
+
+## 💡 Philosophy
+
+Cosmodoro is built around **clarity and calm**.  
+It avoids clutter, dark patterns, and data collection — so you can focus without distraction.
+
+---
+
+## 🚀 Tech Stack
+
+- [Vue 3](https://vuejs.org)
+- [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- TypeScript
+
+---
+
+## 📥 Installation (for devs)
+
+```bash
+git clone
+cd cosmodoro
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
 ```
