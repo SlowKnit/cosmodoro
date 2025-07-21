@@ -29,7 +29,7 @@ function changeValue(delta: number) {
 @reference "tailwindcss";
 
 .wrapper {
-    @apply flex flex-row items-center mt-10 justify-center right-4;
+    @apply flex flex-row items-center mt-10 justify-center align-middle right-4;
 }
 
 .number-input {

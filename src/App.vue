@@ -140,7 +140,7 @@ const stopSound = () => {
 };
 
 onMounted(() => {
-   isMobile.value = window.innerWidth <= 768;
+  isMobile.value = window.innerWidth <= 768;
 });
 </script>
 
@@ -149,7 +149,7 @@ onMounted(() => {
 <style scoped>
 .foregroud {
   height: 100vh;
-  width: 50%;
+  width: 70%;
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -188,6 +188,7 @@ onMounted(() => {
 
 .timer {
   transition: filter 500ms, transform 300ms;
+  font-size: clamp(2rem, 5vw, 80px);
   padding: 10%;
 }
 

@@ -131,7 +131,7 @@ function onReset() {
 }
 
 .main-label {
-    @apply mb-10 top-0 underline;
+    @apply mb-20 pt-5 underline;
 }
 
 .reset {
