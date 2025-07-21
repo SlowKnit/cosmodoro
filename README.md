@@ -9,11 +9,13 @@ Designed to feel calm, pixel-perfect, and distraction-free.
 
 ## ✨ Features
 
-- 🕒 Customizable Pomodoro / Break durations
-- 🎨 Stylish pixel-style background animation
-- 🧠 Focus & Break modes with hue-shift
-- 🛡️ No invasive tracking
-- 🛠️ Lightweight and fast (built with Vite + Vue)
+- 🕒 Customizable Pomodoro & Break durations  
+- 🎨 Stylish pixel-style background animation  
+- 🧠 Focus & Break modes with hue-shift  
+- 📺 Embedded YouTube player for ambient focus music  
+  > *Note: The embedded YouTube player may load cookies or tracking scripts depending on your browser settings.*  
+- 🛡️ No invasive tracking – privacy-friendly by default  
+- ⚡ Lightweight and fast (Vite + Vue powered)  
 - 📱 Responsive & mobile-friendly
 
 ---
