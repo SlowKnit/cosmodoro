@@ -83,8 +83,7 @@ function onReset() {
 }
 
 .form-group {
-    @apply h-15 mb-10 flex flex-row;
-    font-size: clamp(2rem, 5vw, 80px);
+    @apply h-15 mb-10 flex flex-row justify-center align-middle;
 }
 
 .label {
@@ -98,7 +97,8 @@ function onReset() {
 .sidebar {
     @apply fixed top-0 right-0 h-full w-1/4 pl-4 pr-4 flex flex-col;
     background-color: #0e001f;
-    min-width: 200px;
+    font-size: clamp(2rem, 5vw, 80px);
+    min-width: 300px;
     z-index: 1000;
 }
 
