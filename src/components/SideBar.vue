@@ -97,6 +97,7 @@ function onReset() {
 .sidebar {
     @apply fixed top-0 right-0 h-full w-1/4 pl-4 pr-4 flex flex-col;
     background-color: #0e001f;
+    min-width: 500px;
     z-index: 1000;
 }
 

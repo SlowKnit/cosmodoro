@@ -3,8 +3,8 @@
   <TopBar />
   <ShootingStars />
   <SideBar :break-minutes="breaktime_mins" :focus-minutes="focustime_mins"
-    @update:focus-minutes="(newValue) => { focustime_mins = newValue }" 
-    @update:break-minutes="(newValue) => { breaktime_mins = newValue }"/>
+    @update:focus-minutes="(newValue) => { focustime_mins = newValue }"
+    @update:break-minutes="(newValue) => { breaktime_mins = newValue }" />
   <div class='foregroud'>
     <div class='status-wrapper'>
       <Transition name='fade'>
@@ -144,11 +144,12 @@ const stopSound = () => {
 <style scoped>
 .foregroud {
   height: 100vh;
+  width: 50%;
   z-index: 10;
   display: flex;
   flex-direction: column;
   text-align: center;
-  align-content: start;
+  align-content: center;
   justify-content: center;
 }
 
@@ -168,23 +169,21 @@ const stopSound = () => {
 }
 
 .status {
-  width: 100%;
-  top: 10%;
-  text-align: center;
+  position: absolute;
+  justify-self: center;
+  text-align: end;
   color: white;
   z-index: 1000;
 }
 
 .status-wrapper {
-  height: 10%;
-  display: flex;
-  justify-content: center;
+  height: 15%;
+  margin-top: 10%;
 }
 
 .timer {
   transition: filter 500ms, transform 300ms;
-  position: relative;
-  top: 5%;
+  padding: 10%;
 }
 
 .toggle:hover {
