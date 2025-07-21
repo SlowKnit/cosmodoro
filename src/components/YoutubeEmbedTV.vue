@@ -27,7 +27,6 @@
       <button class="tv-btn" @click="playRandomVideo" aria-label="Random" title="Random">
         <img src="/assets/icons/shuffle.png" alt="Random" class="restart-btn-img" />
       </button>
-      <div class="crt-scanlines"></div>
       <button class="tv-btn" @click="restartVideo" aria-label="Restart" title="Restart">
         <img src="/assets/icons/restart.png" alt="Restart" class="restart-btn-img" />
       </button>

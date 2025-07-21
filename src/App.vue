@@ -150,7 +150,7 @@ onMounted(() => {
 .foregroud {
   height: 100vh;
   width: 70%;
-  z-index: 10;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   text-align: center;

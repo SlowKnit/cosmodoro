@@ -35,7 +35,7 @@ const props = defineProps<{
 }
 
 .fade-container {
-    z-index: 15;
+    z-index: 11;
     width: 100%;
     height: 30%;
     font-size: 30px;
