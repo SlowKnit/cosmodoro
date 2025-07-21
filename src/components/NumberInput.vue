@@ -33,12 +33,12 @@ function changeValue(delta: number) {
 }
 
 .number-input {
-    @apply w-20 h-100 pl-2 pr-2 pb-10 rounded border-none flex flex-row align-middle justify-center underline;
+    @apply w-20 h-15 pl-2 pr-2 pb-10 rounded border-none flex flex-row justify-center underline;
     background-color: #0e001f;
 }
 
 .clickable {
-    @apply cursor-pointer pb-4 select-none;
+    @apply cursor-pointer h-15 pb-4 select-none align-middle;
     transition: transform 0.1s ease, filter 0.1s ease;
 }
 
