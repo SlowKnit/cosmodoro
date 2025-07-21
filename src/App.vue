@@ -22,11 +22,11 @@
     </Transition>
     <WrappedPlanet @planet-clicked='onPlanetClicked' />
   </div>
-  <YoutubeEmbedTV ref='TV' />
+  <YoutubeEmbedTV v-if="!isMobile" ref='TV' />
 </template>
 
 <script setup lang='ts'>
-import { computed, ref, useTemplateRef } from 'vue';
+import { computed, onMounted, ref, useTemplateRef } from 'vue';
 import TopBar from './components/TopBar.vue';
 import ShootingStars from './components/ShootingStars.vue';
 import YoutubeEmbedTV from './components/YoutubeEmbedTV.vue';
@@ -34,6 +34,7 @@ import Background from './components/Background.vue';
 import WrappedPlanet from './components/WrappedPlanet.vue';
 import SideBar from './components/SideBar.vue';
 
+const isMobile = ref(false);
 const focustime_mins = ref(25);
 const breaktime_mins = ref(5);
 
@@ -137,6 +138,10 @@ const stopSound = () => {
     tvRef.value?.fadeInVolume(15, 100);
   }
 };
+
+onMounted(() => {
+   isMobile.value = window.innerWidth <= 768;
+});
 </script>
 
 

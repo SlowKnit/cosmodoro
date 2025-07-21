@@ -84,6 +84,7 @@ function onReset() {
 
 .form-group {
     @apply h-15 mb-10 flex flex-row;
+    font-size: clamp(2rem, 5vw, 80px);
 }
 
 .label {
